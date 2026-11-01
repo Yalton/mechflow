@@ -6,6 +6,11 @@ mechflow shows it as a live graph. It finds feedback loops, bottlenecks and
 missing interactions, simulates the economy, and searches for the strategies
 and combinations that break your balance.
 
+The economy side is based on Machinations, Joris Dormans' visual language for
+game economies. mechflow's pools, sources, drains, converters, gates and
+registers, and its step-by-step simulation, follow Machinations and its formal
+subset, Micro-Machinations. See [Acknowledgements](#acknowledgements).
+
 It runs as a local web app, and also as an [MCP](https://modelcontextprotocol.io)
 server, so an AI agent can build and analyse the same models you edit in the
 browser. Both work on plain YAML files in one folder, and changes from either
@@ -137,6 +142,25 @@ and open <http://localhost:4173>. The dev server forwards `/api` and `/ws` to
 `http://127.0.0.1:3000`; set `MECHFLOW_SERVER_URL` to use another address.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
+
+## Acknowledgements
+
+mechflow's economy model and simulation are based on Machinations, created by
+Joris Dormans, and on Micro-Machinations, its formalised subset by Paul Klint
+and Riemer van Rozen:
+
+- J. Dormans, _Engineering Emergence: Applied Theory for Game Design_, PhD
+  thesis, University of Amsterdam, 2012.
+- E. Adams and J. Dormans, _Game Mechanics: Advanced Game Design_, New Riders, 2012.
+- P. Klint and R. van Rozen, _Micro-Machinations: A DSL for Game Economies_,
+  SLE 2013 (<https://ir.cwi.nl/pub/21923>).
+- R. van Rozen and J. Dormans, _Adapting Game Mechanics with
+  Micro-Machinations_, FDG 2014.
+
+mechflow is an independent project. It is not affiliated with or endorsed by
+Machinations.io or the authors above. Where its simulation departs from
+Micro-Machinations, [docs/simulation-semantics.md](docs/simulation-semantics.md)
+marks and explains each departure.
 
 ## License
 
