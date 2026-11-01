@@ -9,7 +9,7 @@ import { join } from "node:path";
  * the swap moves the current file aside (the window where the old
  * compare-then-rename lost writes). The hook fires once, then clears itself.
  */
-const hooks = vi.hoisted(() => ({ afterStage: null as null | (() => void) }));
+const hooks = vi.hoisted(() => ({ afterStage: null as null | ((staged: string) => void) }));
 vi.mock("node:fs", async (importOriginal) => {
   const actual = await importOriginal<typeof import("node:fs")>();
   return {
@@ -20,15 +20,26 @@ vi.mock("node:fs", async (importOriginal) => {
       if (hooks.afterStage && !String(from).includes(".tmp-")) {
         const hook = hooks.afterStage;
         hooks.afterStage = null;
-        hook();
+        hook(String(to));
       }
     },
   };
 });
 
-const { compareAndSwapFileSync, hashYaml, hashesMatch, readModelText, tempPath } = await import(
-  "../src/index.js"
-);
+const {
+  asidePath,
+  compareAndSwapFileSync,
+  hashYaml,
+  hashesMatch,
+  isModelFileSync,
+  isStaleSwapFile,
+  parseSwapFileName,
+  readModelText,
+  recoverStaleModel,
+  recoverStaleModels,
+  STALE_SWAP_MS,
+  tempPath,
+} = await import("../src/index.js");
 
 let dir: string;
 let target: string;
@@ -52,7 +63,7 @@ function otherWriter(content: string): void {
 
 /** No temp or staged files are left next to the model. */
 function expectNoLeftovers(): void {
-  expect(readdirSync(dir).filter((name) => name.includes(".tmp-"))).toEqual([]);
+  expect(readdirSync(dir).filter((name) => parseSwapFileName(name) !== null)).toEqual([]);
 }
 
 describe("compareAndSwapFileSync", () => {
@@ -126,6 +137,99 @@ describe("compareAndSwapFileSync", () => {
     expect(outer.ok).toBe(true);
     expect(readFileSync(target, "utf8")).toBe("first");
     expectNoLeftovers();
+  });
+
+  it.skipIf(process.getuid?.() === 0)("puts the model back when the swap fails after moving it aside", () => {
+    writeFileSync(target, "base");
+    // Reading the staged file then fails, inside the swap's compare step.
+    hooks.afterStage = (staged) => fs.chmodSync(staged, 0o000);
+    expect(() => compareAndSwapFileSync(target, "next", hashYaml("base"))).toThrow(/EACCES/);
+    fs.chmodSync(target, 0o644);
+    expect(readFileSync(target, "utf8")).toBe("base");
+    expectNoLeftovers();
+  });
+});
+
+/** No process runs under this pid (above Linux's pid_max). */
+const DEAD_PID = 999_999_999;
+
+/** What a writer that crashed between moving `target` aside and publishing leaves. */
+function crashedSwap(content: string, pid: number): string {
+  const aside = join(dir, `.model.yaml.aside-${pid}-0123abcd-0000-4000-8000-000000000000`);
+  writeFileSync(aside, content);
+  return aside;
+}
+
+describe("stale swap recovery", () => {
+  it("parses swap file names", () => {
+    expect(parseSwapFileName(".model.yaml.tmp-12-ab-cd")).toEqual({ original: "model.yaml", kind: "temp", pid: 12 });
+    expect(parseSwapFileName(".a.b.yaml.aside-7-ff")).toEqual({ original: "a.b.yaml", kind: "aside", pid: 7 });
+    expect(parseSwapFileName("model.yaml")).toBeNull();
+    expect(parseSwapFileName(".model.yaml.tmp-x-ab")).toBeNull();
+    expect(parseSwapFileName(".model.yaml.tmp-1-ab.yaml")).toBeNull();
+    expect(parseSwapFileName(tempPath(target).slice(dir.length + 1))?.kind).toBe("temp");
+    expect(parseSwapFileName(asidePath(target).slice(dir.length + 1))?.kind).toBe("aside");
+  });
+
+  it("treats a swap file as stale once its writer is gone or it is old", () => {
+    const now = Date.now();
+    const dead = crashedSwap("x", DEAD_PID);
+    // Too young to judge even with a dead pid: the writer may be in another pid namespace.
+    expect(isStaleSwapFile(dead, now)).toBe(false);
+    expect(isStaleSwapFile(dead, now + 2_000)).toBe(true);
+    const live = join(dir, `.other.yaml.aside-${process.pid}-abcd`);
+    writeFileSync(live, "y");
+    expect(isStaleSwapFile(live, now + 2_000)).toBe(false);
+    expect(isStaleSwapFile(live, now + STALE_SWAP_MS + 1_000)).toBe(true);
+    expect(isStaleSwapFile(join(dir, ".gone.yaml.aside-1-ab"), now + STALE_SWAP_MS * 2)).toBe(false);
+  });
+
+  it("restores a model a crashed writer left moved aside", () => {
+    crashedSwap("committed", DEAD_PID);
+    expect(recoverStaleModel(target, Date.now() + 2_000)).toBe(true);
+    expect(readFileSync(target, "utf8")).toBe("committed");
+    expectNoLeftovers();
+  });
+
+  it("restores through readModelText and isModelFileSync once the file is stale", () => {
+    crashedSwap("committed", DEAD_PID);
+    const later = Date.now() + 2_000;
+    const spy = vi.spyOn(Date, "now").mockReturnValue(later);
+    try {
+      expect(isModelFileSync(target)).toBe(true);
+      expect(readModelText(target)).toBe("committed");
+    } finally {
+      spy.mockRestore();
+    }
+    expectNoLeftovers();
+  });
+
+  it("restores every stale model in a directory", () => {
+    crashedSwap("one", DEAD_PID);
+    writeFileSync(join(dir, `.two.yaml.aside-${DEAD_PID}-ab`), "two");
+    expect(recoverStaleModels(dir, Date.now() + 2_000).sort()).toEqual(["model.yaml", "two.yaml"]);
+    expect(readFileSync(join(dir, "two.yaml"), "utf8")).toBe("two");
+    expectNoLeftovers();
+  });
+
+  it("leaves a fresh swap by a live writer alone", () => {
+    const aside = crashedSwap("in flight", process.pid);
+    expect(recoverStaleModel(target, Date.now() + 2_000)).toBe(false);
+    expect(readdirSync(dir)).toEqual([aside.slice(dir.length + 1)]);
+  });
+
+  it("never replaces a model another writer created", () => {
+    const aside = crashedSwap("old", DEAD_PID);
+    writeFileSync(target, "newer");
+    expect(recoverStaleModel(target, Date.now() + 2_000)).toBe(false);
+    expect(readFileSync(target, "utf8")).toBe("newer");
+    expect(readFileSync(aside, "utf8")).toBe("old");
+  });
+
+  it("never publishes a stale temp file, which holds a write that did not land", () => {
+    writeFileSync(join(dir, `.model.yaml.tmp-${DEAD_PID}-ab`), "unpublished");
+    expect(recoverStaleModel(target, Date.now() + STALE_SWAP_MS * 2)).toBe(false);
+    expect(readModelText(target)).toBeNull();
   });
 });
 

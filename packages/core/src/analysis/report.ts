@@ -8,6 +8,7 @@ import { bottlenecksCheck } from "./bottlenecks.js";
 import { couplingCheck } from "./coupling.js";
 import { multipliersCheck } from "./multipliers.js";
 import { activationPullsCheck } from "./activation-pulls.js";
+import { undeclaredPropertiesCheck } from "./undeclared-properties.js";
 import { buildInteractionMatrix, type InteractionMatrix } from "./interaction-matrix.js";
 import { findGhostEdges, type GhostEdge } from "./ghost-edges.js";
 import type { Check, Finding, Severity } from "./types.js";
@@ -26,6 +27,7 @@ export const CHECKS: Check[] = [
   couplingCheck,
   multipliersCheck,
   activationPullsCheck,
+  undeclaredPropertiesCheck,
 ];
 
 const SEVERITY_RANK: Record<Severity, number> = { error: 0, warning: 1, info: 2 };

@@ -1,6 +1,6 @@
 import { basename, relative } from "node:path";
 import { watch as chokidarWatch, type FSWatcher } from "chokidar";
-import { hashYaml, isModelFileSync, readModelText } from "@mechflow/files";
+import { hashYaml, isModelFileSync, parseSwapFileName, readModelText } from "@mechflow/files";
 
 /**
  * File watching for the models directory.
@@ -9,8 +9,8 @@ import { hashYaml, isModelFileSync, readModelText } from "@mechflow/files";
  * - `model-changed` after a 100 ms debounce (rapid writes collapse to one),
  * - `model-removed` when a file is deleted.
  *
- * Atomic-write temp files (`.<name>.tmp-<pid>-<uuid>`) are ignored so a PUT
- * never surfaces as a spurious change.
+ * Swap files (`.<name>.tmp-<pid>-<uuid>`, `.<name>.aside-<pid>-<uuid>`) are
+ * ignored so a PUT never surfaces as a spurious change.
  */
 
 export type ModelWatchEvent =
@@ -26,9 +26,6 @@ export interface WatcherHandle {
 
 /** Debounce window for coalescing rapid writes to the same model. */
 export const DEBOUNCE_MS = 100;
-
-/** Matches the temp files written by `@mechflow/files` (`tempPath`). */
-const TEMP_FILE_RE = /\.tmp-[\d]+-[0-9a-f-]+$/;
 
 /**
  * Watch `modelsRoot`, invoking `onChange` once per debounced change/removal
@@ -64,7 +61,7 @@ export function createWatcher(
 
   const watcher: FSWatcher = chokidarWatch(modelsRoot, {
     ignoreInitial: true,
-    ignored: (p: string) => TEMP_FILE_RE.test(basename(p)),
+    ignored: (p: string) => parseSwapFileName(basename(p)) !== null,
   });
 
   // Resolve once the initial scan finishes so callers can write a file after

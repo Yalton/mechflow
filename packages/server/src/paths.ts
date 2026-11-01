@@ -1,4 +1,5 @@
 import { readdirSync, statSync } from "node:fs";
+import { recoverStaleModels } from "@mechflow/files";
 import { extname, isAbsolute, join, normalize, relative, resolve, sep } from "node:path";
 
 /** File extensions treated as mechflow models. */
@@ -56,6 +57,8 @@ export function listModels(modelsRoot: string): string[] {
   const walk = (dir: string): void => {
     let entries: string[];
     try {
+      // A model a crashed writer left moved aside would otherwise vanish.
+      recoverStaleModels(dir);
       entries = readdirSync(dir);
     } catch {
       return;

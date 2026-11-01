@@ -45,4 +45,37 @@ describe("property layer", () => {
     expect(handle).not.toBeNull();
     expect(handle?.classList.contains("connectable")).toBe(false);
   });
+
+  it("places each hub near the nodes it links to, at their canvas positions", async () => {
+    const placed: Model = {
+      ...model,
+      nodes: [
+        {
+          id: "fire",
+          kind: "mechanic",
+          name: "Fire",
+          subsystem: "core",
+          reads: [],
+          writes: ["temperature"],
+          position: { x: 2000, y: 1000 },
+        },
+        {
+          id: "stove",
+          kind: "entity",
+          name: "Stove",
+          subsystem: "core",
+          has: ["temperature"],
+          position: { x: 2200, y: 1000 },
+        },
+      ],
+    };
+    render(<GraphView model={placed} />);
+    fireEvent.click(screen.getByTestId("property-layer-toggle"));
+    const hub = await screen.findByTestId("property-node");
+    const transform = (hub.closest(".react-flow__node") as HTMLElement).style.transform;
+    const [, x, y] = /translate\((-?[\d.]+)px,\s*(-?[\d.]+)px\)/.exec(transform) ?? [];
+    // Centroid (2100, 1000) plus at most the 48px radial spread.
+    expect(Math.abs(Number(x) - 2100)).toBeLessThanOrEqual(48);
+    expect(Math.abs(Number(y) - 1000)).toBeLessThanOrEqual(48);
+  });
 });

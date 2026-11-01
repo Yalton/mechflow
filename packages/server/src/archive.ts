@@ -1,7 +1,7 @@
 import { lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, renameSync, rmdirSync, rmSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, relative, sep } from "node:path";
 import { zipSync, unzipSync } from "fflate";
-import { readModelText } from "@mechflow/files";
+import { isStaleSwapFile, parseSwapFileName, readModelText, recoverStaleModel } from "@mechflow/files";
 import { isValidFolderPath, resolveModelPath } from "./paths.js";
 
 const MANIFEST = ".mechflow-archive.json";
@@ -105,11 +105,19 @@ function buildArchive(modelsRoot: string, path: string, kind: ArchiveKind): Uint
     const children = readdirSync(dir, { withFileTypes: true });
     const listed = new Set(children.map((item) => item.name));
     for (const item of children) {
-      const match = /^\.(.+)\.tmp-\d+-[0-9a-f-]+$/.exec(item.name);
-      if (match) {
-        // A post-listing lstat can see a model restored after it was absent
-        // from this snapshot. Retry instead of returning a ZIP without it.
-        if (!listed.has(match[1]!)) throw new ArchiveError("model save in progress", 409);
+      const swap = parseSwapFileName(item.name);
+      if (swap) {
+        if (listed.has(swap.original)) continue;
+        // The model is absent from this snapshot. While a swap is live it is
+        // about to come back: retry instead of returning a ZIP without it.
+        if (!isStaleSwapFile(join(dir, item.name))) throw new ArchiveError("model save in progress", 409);
+        // A crashed writer left it moved aside: restore it, then retry so the
+        // next pass lists it under its real name.
+        if (swap.kind === "aside") {
+          recoverStaleModel(join(dir, swap.original));
+          throw new ArchiveError("model save in progress", 409);
+        }
+        // A stale temp file is a write that never published; skip it.
         continue;
       }
       if (++count > MAX_ENTRIES) throw new ArchiveError("folder has too many entries", 413);

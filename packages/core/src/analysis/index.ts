@@ -23,5 +23,6 @@ export { bottlenecksCheck } from "./bottlenecks.js";
 export { couplingCheck, buildCouplingMap } from "./coupling.js";
 export { multipliersCheck, findMultiplierChains, evaluateConstantMultiplier } from "./multipliers.js";
 export { activationPullsCheck } from "./activation-pulls.js";
+export { undeclaredPropertiesCheck } from "./undeclared-properties.js";
 export { traceEffects } from "./trace.js";
 export type { TraceResult, TraceLevel, TraceNode } from "./trace.js";

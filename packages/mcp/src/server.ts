@@ -2,6 +2,7 @@ import { readdirSync } from "node:fs";
 import path from "node:path";
 import { z } from "zod";
 import { parseModelYaml, serializeModelYaml, validateModel, type Model, type Edge } from "@mechflow/core";
+import { recoverStaleModels } from "@mechflow/files";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
@@ -53,6 +54,8 @@ function jsonResult(value: unknown, isError = false): CallToolResult {
 function listYamlFiles(root: string): string[] {
   const out: string[] = [];
   const walk = (dir: string): void => {
+    // A model a crashed writer left moved aside would otherwise vanish.
+    recoverStaleModels(dir);
     for (const entry of readdirSync(dir, { withFileTypes: true })) {
       if (entry.isDirectory()) walk(path.join(dir, entry.name));
       else if (/\.ya?ml$/i.test(entry.name)) out.push(path.join(dir, entry.name));

@@ -19,12 +19,12 @@ import { analyzeModel, parseModelYaml, serializeModelYaml, type Model } from "@m
 import { isRegularFile, isValidFolderPath, listFolders, listModels, MODEL_EXTENSIONS, resolveModelPath } from "./paths.js";
 import { ArchiveError, exportArchive, importArchive, MAX_ARCHIVE_BYTES } from "./archive.js";
 import {
+  asidePath,
   compareAndSwapFileSync,
   hashYaml,
   hashesMatch,
   isModelFileSync,
   readModelText,
-  tempPath,
 } from "@mechflow/files";
 
 /**
@@ -353,7 +353,7 @@ export function handleReport(
 
 /** Atomically remove the source pathname while retaining its inode for a safe decision. */
 export function stageModel(source: string): string {
-  const staged = tempPath(source);
+  const staged = asidePath(source);
   renameSync(source, staged);
   return staged;
 }

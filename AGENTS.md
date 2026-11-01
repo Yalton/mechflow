@@ -43,7 +43,11 @@ silently clobbering a remote edit, the server uses HTTP `If-Match`:
   processes with no lock files. The file is briefly absent during a swap, so
   read model files with `readModelText` / `isModelFileSync`, which retry
   through that window; a plain `readFileSync` or `stat` can see a spurious
-  ENOENT. `write_model` stays an unconditional overwrite.
+  ENOENT. `write_model` stays an unconditional overwrite. A writer that
+  crashes mid-swap leaves the model only as `.<name>.aside-<pid>-<uuid>`;
+  those readers, model listings and export restore such a file once it is
+  stale (`recoverStaleModel` / `recoverStaleModels`). Anything else that moves
+  a model aside must use `asidePath`, not `tempPath`, so it can be recovered.
 
 **Browser behaviour on a 409:** if the editor has **no unsaved edits**, it
 applies the server's current YAML and notifies the user; if it **has unsaved

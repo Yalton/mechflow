@@ -243,7 +243,9 @@ export function GraphView({
       ];
     }
     if (showPropertyLayer && model) {
-      const pl = propertyLayerToFlow(model);
+      // Place hubs from the nodes' live canvas positions, not a fallback layout,
+      // so each hub sits among the nodes it links to.
+      const pl = propertyLayerToFlow(model, new Map(graph.nodes.map((n) => [n.id, n.position])));
       graph.nodes = [
         ...graph.nodes,
         ...pl.nodes.map((hub) => ({
