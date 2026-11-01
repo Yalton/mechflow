@@ -1,0 +1,106 @@
+version: 1
+name: Multiplier
+description: Stacked multiplier chains exercising the multiplier check branches.
+properties:
+  - id: amount
+    kind: number
+    description: Quantity flowing along a chain.
+subsystems:
+  - id: chain1
+    name: Chain One
+    tier: core
+  - id: chain2
+    name: Chain Two
+    tier: core
+  - id: chain3
+    name: Chain Three
+    tier: core
+nodes:
+  - id: pool_a
+    kind: pool
+    name: Pool A
+    subsystem: chain1
+    start: 1
+  - id: pool_b
+    kind: pool
+    name: Pool B
+    subsystem: chain1
+    start: 0
+  - id: pool_c
+    kind: pool
+    name: Pool C
+    subsystem: chain1
+    start: 0
+  - id: pool_d
+    kind: pool
+    name: Pool D
+    subsystem: chain1
+    start: 0
+  - id: pool_e
+    kind: pool
+    name: Pool E
+    subsystem: chain2
+    start: 1
+  - id: pool_f
+    kind: pool
+    name: Pool F
+    subsystem: chain2
+    start: 0
+  - id: pool_g
+    kind: pool
+    name: Pool G
+    subsystem: chain2
+    start: 0
+  - id: pool_h
+    kind: pool
+    name: Pool H
+    subsystem: chain3
+    start: 1
+  - id: pool_i
+    kind: pool
+    name: Pool I
+    subsystem: chain3
+    start: 0
+  - id: pool_j
+    kind: pool
+    name: Pool J
+    subsystem: chain3
+    start: 0
+edges:
+  - id: a_to_b
+    kind: flow
+    from: pool_a
+    to: pool_b
+    multiplier: "2"
+  - id: b_to_c
+    kind: flow
+    from: pool_b
+    to: pool_c
+    multiplier: "2"
+  - id: c_to_d
+    kind: flow
+    from: pool_c
+    to: pool_d
+    multiplier: self
+  - id: e_to_f
+    kind: flow
+    from: pool_e
+    to: pool_f
+    multiplier: "3"
+  - id: f_to_g
+    kind: flow
+    from: pool_f
+    to: pool_g
+    multiplier: "2"
+  - id: h_to_i
+    kind: flow
+    from: pool_h
+    to: pool_i
+    multiplier: "1"
+  - id: i_to_j
+    kind: flow
+    from: pool_i
+    to: pool_j
+    multiplier: "2"
+noInteraction: []
+invariants: []

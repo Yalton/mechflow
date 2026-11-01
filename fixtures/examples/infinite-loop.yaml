@@ -1,0 +1,57 @@
+version: 1
+name: Infinite Loop
+description: A resource-conversion loop whose gain exceeds one, an uncapped infinite loop.
+properties: []
+subsystems:
+  - id: economy
+    name: Economy
+    tier: core
+nodes:
+  - id: a
+    kind: pool
+    name: A
+    subsystem: economy
+    start: 1
+  - id: b
+    kind: pool
+    name: B
+    subsystem: economy
+    start: 0
+  - id: c
+    kind: pool
+    name: C
+    subsystem: economy
+    start: 0
+  - id: conv_ab
+    kind: converter
+    name: A to B
+    subsystem: economy
+    inputs:
+      - resource: a
+        amount: 1
+    outputs:
+      - resource: b
+        amount: 2
+  - id: conv_bc
+    kind: converter
+    name: B to C
+    subsystem: economy
+    inputs:
+      - resource: b
+        amount: 1
+    outputs:
+      - resource: c
+        amount: 2
+  - id: conv_ca
+    kind: converter
+    name: C to A
+    subsystem: economy
+    inputs:
+      - resource: c
+        amount: 1
+    outputs:
+      - resource: a
+        amount: 2
+edges: []
+noInteraction: []
+invariants: []

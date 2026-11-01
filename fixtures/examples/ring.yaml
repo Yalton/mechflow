@@ -1,0 +1,60 @@
+version: 1
+name: Ring
+description: A directed five-pool ring with symmetric flow, expected to flag nothing.
+properties:
+  - id: content
+    kind: number
+    description: Amount of content flowing through the ring.
+subsystems:
+  - id: ring
+    name: Ring
+    tier: core
+nodes:
+  - id: p1
+    kind: pool
+    name: P1
+    subsystem: ring
+    start: 1
+  - id: p2
+    kind: pool
+    name: P2
+    subsystem: ring
+    start: 0
+  - id: p3
+    kind: pool
+    name: P3
+    subsystem: ring
+    start: 0
+  - id: p4
+    kind: pool
+    name: P4
+    subsystem: ring
+    start: 0
+  - id: p5
+    kind: pool
+    name: P5
+    subsystem: ring
+    start: 0
+edges:
+  - id: p1_to_p2
+    kind: flow
+    from: p1
+    to: p2
+  - id: p2_to_p3
+    kind: flow
+    from: p2
+    to: p3
+  - id: p3_to_p4
+    kind: flow
+    from: p3
+    to: p4
+  - id: p4_to_p5
+    kind: flow
+    from: p4
+    to: p5
+  - id: p5_to_p1
+    kind: flow
+    from: p5
+    to: p1
+noInteraction: []
+invariants: []

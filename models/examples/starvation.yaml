@@ -1,0 +1,41 @@
+version: 1
+name: Starvation
+description: The forge wants more ore than the mine produces, so once the stockpile is gone it is short every step. Triggers the starvation check.
+properties:
+  - id: ore
+    kind: number
+    description: Raw ore.
+subsystems:
+  - id: industry
+    name: Industry
+    tier: core
+nodes:
+  - id: mine
+    kind: source
+    name: Mine
+    subsystem: industry
+    rate: 2
+  - id: stockpile
+    kind: pool
+    name: Ore Stockpile
+    subsystem: industry
+    start: 30
+  - id: forge
+    kind: drain
+    name: Forge
+    subsystem: industry
+    rate: 5
+edges:
+  - id: mining
+    kind: flow
+    from: mine
+    to: stockpile
+    label: mined ore
+  - id: smelting
+    kind: flow
+    from: stockpile
+    to: forge
+    label: ore smelted
+    rate: "5"
+noInteraction: []
+invariants: []

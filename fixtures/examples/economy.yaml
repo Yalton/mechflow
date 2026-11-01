@@ -1,0 +1,64 @@
+version: 1
+name: Simple Economy
+description: A small production economy with a gold-labor feedback loop. Used as an example model.
+properties:
+  - id: gold
+    kind: number
+    description: Money circulating in the economy.
+  - id: goods
+    kind: number
+    description: Goods available for sale.
+subsystems:
+  - id: economy
+    name: Economy
+    tier: core
+nodes:
+  - id: treasury
+    kind: pool
+    name: Treasury
+    subsystem: economy
+    start: 1000
+  - id: workshop
+    kind: pool
+    name: Workshop Inventory
+    subsystem: economy
+    start: 0
+  - id: market
+    kind: pool
+    name: Market
+    subsystem: economy
+    start: 0
+  - id: reserve
+    kind: pool
+    name: Reserve
+    subsystem: economy
+    start: 500
+edges:
+  - id: treasury_to_workshop
+    kind: flow
+    from: treasury
+    to: workshop
+    label: funds production
+    rate: "100"
+  - id: workshop_to_market
+    kind: flow
+    from: workshop
+    to: market
+    label: supplies goods
+    rate: "10"
+  - id: market_to_treasury
+    kind: flow
+    from: market
+    to: treasury
+    label: sells goods
+    rate: "50"
+  - id: treasury_to_reserve
+    kind: flow
+    from: treasury
+    to: reserve
+    label: held in reserve
+    rate: "10"
+noInteraction: []
+invariants:
+  - id: treasury_nonnegative
+    description: The treasury should never go negative.

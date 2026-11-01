@@ -1,0 +1,53 @@
+version: 1
+name: Cascade
+description: A supply chain where the farm runs out, then the mill, then the bakery, each a few steps after the one before. Triggers the cascading-failure check.
+properties:
+  - id: food
+    kind: number
+    description: Grain, flour and bread moving down the chain.
+subsystems:
+  - id: chain
+    name: Supply Chain
+    tier: core
+nodes:
+  - id: farm
+    kind: pool
+    name: Farm
+    subsystem: chain
+    start: 12
+  - id: mill
+    kind: pool
+    name: Mill
+    subsystem: chain
+    start: 0
+  - id: bakery
+    kind: pool
+    name: Bakery
+    subsystem: chain
+    start: 0
+  - id: shop
+    kind: pool
+    name: Shop
+    subsystem: chain
+    start: 0
+edges:
+  - id: grain
+    kind: flow
+    from: farm
+    to: mill
+    label: grain
+    rate: "4"
+  - id: flour
+    kind: flow
+    from: mill
+    to: bakery
+    label: flour
+    rate: "3"
+  - id: bread
+    kind: flow
+    from: bakery
+    to: shop
+    label: bread
+    rate: "2"
+noInteraction: []
+invariants: []

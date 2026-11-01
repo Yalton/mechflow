@@ -1,0 +1,891 @@
+/*
+ * App-wide design tokens and base control styles. Components still carry
+ * inline styles for layout details; these rules give every native control
+ * (buttons, inputs, selects, textareas) one consistent look so nothing falls
+ * back to the browser default.
+ */
+:root {
+  /* Light theme. */
+  --bg: #f4f6f9;
+  --surface: #ffffff;
+  --surface-2: #f8fafc;
+  --surface-glass: #ffffffee;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --text: #0f172a;
+  --text-2: #475569;
+  --text-3: #94a3b8;
+  --accent: #2563eb;
+  --accent-strong: #1d4ed8;
+  --accent-soft: #eff6ff;
+  --accent-border: #bfdbfe;
+  --violet: #7c3aed;
+  --violet-muted: #a78bfa;
+  --violet-soft: #f5f3ff;
+  --violet-border: #c7d2fe;
+  --violet-text: #5b21b6;
+  --cyan: #0891b2;
+  --lime: #4d7c0f;
+  --chain-1: #2563eb;
+  --chain-2: #059669;
+  --chain-3: #7c3aed;
+  --chain-4: #0891b2;
+  --chain-5: #db2777;
+  --chain-6: #65a30d;
+  --danger: #dc2626;
+  --danger-soft: #fef2f2;
+  --danger-border: #fecaca;
+  --danger-text: #b91c1c;
+  --warning: #b45309;
+  --warning-soft: #fffbeb;
+  --warning-border: #fde68a;
+  --warning-text: #b45309;
+  --ok: #15803d;
+  --ok-soft: #f0fdf4;
+  --ok-border: #bbf7d0;
+  --moving: #d97706;
+  --moving-pulse: #fff7e6;
+  --grid-dot: #cbd5e1;
+  --shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
+  --radius: 6px;
+  --radius-lg: 10px;
+  --font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+  color-scheme: light;
+}
+
+/* Dark theme, the default: main.tsx sets data-theme before the first render. */
+:root[data-theme="dark"] {
+  --bg: #0b0f17;
+  --surface: #121826;
+  --surface-2: #182032;
+  --surface-glass: #121826ee;
+  --border: #243044;
+  --border-strong: #334259;
+  --text: #e6ebf3;
+  --text-2: #9aa7bb;
+  --text-3: #64738a;
+  --accent: #4f8cff;
+  --accent-strong: #6d9fff;
+  --accent-soft: #16233d;
+  --accent-border: #2a4372;
+  --violet: #a78bfa;
+  --violet-muted: #8b72d6;
+  --violet-soft: #1f1a33;
+  --violet-border: #3d3366;
+  --violet-text: #c4b5fd;
+  --cyan: #22b8d6;
+  --lime: #8bc34a;
+  --chain-1: #60a5fa;
+  --chain-2: #34d399;
+  --chain-3: #a78bfa;
+  --chain-4: #22d3ee;
+  --chain-5: #f472b6;
+  --chain-6: #a3e635;
+  --danger: #f87171;
+  --danger-soft: #2a1517;
+  --danger-border: #5c2427;
+  --danger-text: #fca5a5;
+  --warning: #fbbf24;
+  --warning-soft: #2a2010;
+  --warning-border: #5c4416;
+  --warning-text: #fbbf24;
+  --ok: #4ade80;
+  --ok-soft: #10261a;
+  --ok-border: #1e4d30;
+  --moving: #f59e0b;
+  --moving-pulse: #fff3d6;
+  --grid-dot: #263247;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 13px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* Controls ------------------------------------------------------------- */
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+button:hover:not(:disabled) {
+  background: var(--surface-2);
+  border-color: var(--text-3);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent-border);
+  outline-offset: 1px;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+select,
+textarea {
+  min-width: 0;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  font-size: 12px;
+}
+
+textarea {
+  height: auto;
+  padding: 6px 8px;
+  line-height: 1.4;
+  resize: vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--accent);
+}
+
+input[type="range"] {
+  accent-color: var(--accent);
+}
+
+label {
+  color: var(--text-2);
+}
+
+/* Shared classes ------------------------------------------------------- */
+
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+}
+
+.btn-ghost {
+  border-color: transparent;
+  background: transparent;
+  color: var(--text-2);
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: var(--border);
+  border-color: transparent;
+  color: var(--text);
+}
+
+.btn-icon {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  font-size: 13px;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.segmented {
+  display: inline-flex;
+  padding: 2px;
+  border-radius: 8px;
+  background: var(--border);
+}
+
+.segmented button {
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: var(--text-2);
+}
+
+.segmented button[aria-current="page"],
+.segmented button[aria-selected="true"] {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.12);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+}
+
+.badge-ok { background: var(--ok-soft); border-color: var(--ok-border); color: var(--ok); }
+.badge-error { background: var(--danger-soft); border-color: var(--danger-border); color: var(--danger); }
+.badge-warning { background: var(--warning-soft); border-color: var(--warning-border); color: var(--warning); }
+/* Summary badges are buttons that open the findings; keep them badge-sized. */
+button.badge { height: 22px; padding: 0 8px; font-size: 11px; cursor: pointer; }
+button.badge:not(.badge-error):not(.badge-warning) { border-color: var(--border); }
+
+.muted {
+  color: var(--text-2);
+}
+
+.alert {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--danger-border);
+  border-radius: var(--radius);
+  background: var(--danger-soft);
+  color: var(--danger-text);
+}
+
+/* App shell ------------------------------------------------------------ */
+
+.shell {
+  display: grid;
+  grid-template-columns: 232px minmax(0, 1fr);
+  height: 100vh;
+  overflow: hidden;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.sidebar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 48px;
+  padding: 0 12px 0 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.brand {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.sidebar-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 8px;
+}
+
+.new-model {
+  display: flex;
+  gap: 6px;
+  padding: 4px 4px 10px;
+}
+
+.new-model input {
+  flex: 1;
+}
+
+.group-label {
+  padding: 10px 8px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-3);
+}
+
+.model-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.model-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-radius: var(--radius);
+}
+
+.model-row:hover {
+  background: var(--surface-2);
+}
+
+.model-row[data-active="true"] {
+  background: var(--accent-soft);
+}
+
+.model-row > button.model-open {
+  flex: 1;
+  justify-content: flex-start;
+  min-width: 0;
+  height: 30px;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-weight: 400;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.model-row[data-active="true"] > button.model-open {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.model-actions {
+  display: none;
+  gap: 2px;
+  padding-right: 4px;
+}
+
+.model-row:hover .model-actions,
+.model-row:focus-within .model-actions {
+  display: flex;
+}
+
+.rename-form {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  width: 100%;
+}
+
+.rename-form input {
+  flex: 1;
+}
+
+.workspace {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 48px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+
+.topbar-title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+.topbar-title h2 {
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+.topbar-title .path {
+  color: var(--text-3);
+  font-family: var(--mono);
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.topbar-spacer {
+  flex: 1;
+}
+
+.summary {
+  display: flex;
+  gap: 6px;
+}
+
+.empty-state {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-3);
+  font-size: 14px;
+}
+
+.editor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  flex: 1;
+  min-height: 0;
+}
+
+.center {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.banners {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 12px 0;
+}
+
+.canvas {
+  flex: 1;
+  min-height: 240px;
+  padding: 12px;
+}
+
+.inspector-col {
+  min-height: 0;
+  overflow: auto;
+  border-left: 1px solid var(--border);
+  background: var(--surface);
+  padding: 12px 14px 24px;
+}
+
+/* Bottom dock ---------------------------------------------------------- */
+
+.dock {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.dock[data-open="true"] {
+  height: 38vh;
+  min-height: 200px;
+}
+
+.dock-tabs {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 38px;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.dock[data-open="false"] .dock-tabs {
+  border-bottom: none;
+}
+
+.dock-tabs [role="tab"] {
+  height: 38px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-2);
+}
+
+.dock-tabs [role="tab"][aria-selected="true"] {
+  border-bottom-color: var(--accent);
+  color: var(--text);
+}
+
+.dock-tabs .count {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--border);
+  font-size: 10px;
+  line-height: 18px;
+  text-align: center;
+}
+
+.dock-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 12px 16px;
+}
+
+.yaml-view {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-height: 0;
+  padding: 12px 16px;
+}
+
+.yaml-view textarea {
+  flex: 1;
+  font-family: var(--mono);
+  font-size: 12px;
+  resize: none;
+}
+
+.yaml-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* React Flow chrome ---------------------------------------------------- */
+
+.react-flow__controls {
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.react-flow__controls-button {
+  width: 26px;
+  height: 26px;
+  border-radius: 0;
+  border-color: var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.react-flow__controls-button svg {
+  fill: currentColor;
+}
+
+.react-flow__controls-button:hover {
+  background: var(--surface-2);
+}
+
+/* Connect handles appear only on the node under the pointer. */
+.react-flow__handle {
+  background: var(--accent);
+  border-color: var(--surface);
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+
+.react-flow__node:hover .react-flow__handle,
+.react-flow__handle.connecting {
+  opacity: 1;
+}
+
+.react-flow__attribution {
+  background: transparent;
+}
+
+.react-flow__attribution a {
+  color: var(--text-3);
+}
+
+/* Resources streaming along an edge that moved something this step. The dash
+   offset runs down to 0, so the dots travel from source to target. */
+.flow-pulse {
+  animation: flow-dash 0.7s linear infinite;
+}
+
+@keyframes flow-dash {
+  from { stroke-dashoffset: 16; }
+  to { stroke-dashoffset: 0; }
+}
+
+/* At rest, a slow faint drift along every flow edge shows its direction. */
+.flow-drift {
+  opacity: 0.55;
+  animation: flow-drift 2.4s linear infinite;
+}
+
+@keyframes flow-drift {
+  from { stroke-dashoffset: 24; }
+  to { stroke-dashoffset: 0; }
+}
+
+/* During a run, a state edge whose source just changed runs its dashes forward. */
+.signal-pulse {
+  animation: signal-dash 0.6s linear infinite;
+}
+
+@keyframes signal-dash {
+  from { stroke-dashoffset: 10; }
+  to { stroke-dashoffset: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .signal-pulse,
+  .flow-pulse,
+  .flow-drift { animation: none; }
+}
+
+.theme-toggle {
+  font-size: 14px;
+}
+
+
+.run-extras:empty {
+  display: none !important;
+}
+
+[data-testid^="palette-item-"]:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flow-tokens {
+    display: none;
+  }
+}
+
+/* Sidebar: the game picker and its folder tree (folders.ts). */
+.game-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 4px;
+  padding: 4px 4px 8px;
+}
+
+.game-bar select {
+  flex: 1 1 100%;
+  min-width: 0;
+  font-weight: 600;
+}
+
+.game-bar .btn-ghost {
+  padding: 0 6px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.archive-bar {
+  display: flex;
+  gap: 4px;
+  padding: 0 4px 8px;
+}
+
+.archive-bar .btn-ghost {
+  flex: 1;
+  padding: 3px 4px;
+  font-size: 11px;
+}
+
+.archive-import {
+  display: grid;
+  gap: 6px;
+  padding: 0 4px 8px;
+}
+
+.archive-import input,
+.archive-import select {
+  min-width: 0;
+  width: 100%;
+}
+
+.folder-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: var(--radius);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-3);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.folder-row::-webkit-details-marker {
+  display: none;
+}
+
+.folder-row::before {
+  content: "▸";
+  transition: transform 0.12s;
+}
+
+.folder[open] > .folder-row::before {
+  transform: rotate(90deg);
+}
+
+.folder-row:hover {
+  background: var(--surface-2);
+}
+
+.folder-row[data-active="true"] {
+  color: var(--accent);
+}
+
+.folder-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.folder-row:hover .model-actions,
+.folder-row:focus-within .model-actions,
+.game-bar .model-actions {
+  display: flex;
+}
+
+.folder-row .model-actions {
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.folder-body {
+  margin-left: 10px;
+  padding-left: 4px;
+  border-left: 1px solid var(--border);
+}
+
+.folder-empty {
+  padding: 8px;
+}
+
+.move-form {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.move-form select {
+  flex: 1 1 100%;
+  min-width: 0;
+}
+
+/* Drag and drop in the sidebar. */
+.model-row[draggable="true"],
+.folder-row[draggable="true"] {
+  cursor: grab;
+}
+
+.model-row[data-dragging] {
+  opacity: 0.5;
+}
+
+.folder[data-drop],
+.model-tree[data-drop],
+.game-drop-target[data-drop] {
+  background: var(--accent-soft);
+  outline: 1px dashed var(--accent);
+  outline-offset: -1px;
+}
+
+.model-tree {
+  min-height: 60px;
+  border-radius: var(--radius);
+}
+
+.game-drop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 4px 8px;
+  font-size: 11px;
+}
+
+.game-drop > .muted {
+  flex: 1 1 100%;
+}
+
+.game-drop-target {
+  padding: 4px 10px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius);
+  font-weight: 600;
+}
+
+/* Fallback shown by ErrorBoundary when a view crashes during render. */
+.error-boundary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 24px;
+  padding: 16px;
+  border: 1px solid var(--danger-border);
+  border-radius: 8px;
+  background: var(--danger-soft);
+  color: var(--danger-text);
+  max-width: 640px;
+}
+.error-boundary code {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.error-boundary p {
+  margin: 0;
+}

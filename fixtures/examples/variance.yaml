@@ -1,0 +1,46 @@
+version: 1
+name: Variance
+description: A loot drop pays out 30 gold on a natural 20 and nothing otherwise, so the jackpot ends very differently from run to run while wages stay the same. Triggers the variance check.
+properties:
+  - id: gold
+    kind: number
+    description: The player's currency.
+subsystems:
+  - id: loot
+    name: Loot
+    tier: core
+nodes:
+  - id: drops
+    kind: source
+    name: Loot Drops
+    subsystem: loot
+    rate: 1
+  - id: jackpot
+    kind: pool
+    name: Jackpot Winnings
+    subsystem: loot
+    start: 0
+  - id: employer
+    kind: source
+    name: Employer
+    subsystem: loot
+    rate: 5
+  - id: wages
+    kind: pool
+    name: Wages
+    subsystem: loot
+    start: 0
+edges:
+  - id: drop
+    kind: flow
+    from: drops
+    to: jackpot
+    label: a natural 20 pays 30
+    rate: "(dice(1, 20) == 20) * 30"
+  - id: pay
+    kind: flow
+    from: employer
+    to: wages
+    label: wages
+noInteraction: []
+invariants: []

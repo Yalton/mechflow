@@ -1,0 +1,61 @@
+version: 1
+name: Boundary
+description: >-
+  Recruitment pays recruits times training per step, and upkeep grows with both. At the defaults, or with
+  either knob at its maximum, upkeep keeps the army level; with both at their maximum the army explodes.
+  Triggers the boundary sweep.
+properties: []
+subsystems:
+  - id: military
+    name: Military
+    tier: core
+parameters:
+  - id: recruits
+    description: Recruits gained per training round.
+    value: 2
+    min: 1
+    max: 5
+    integer: true
+  - id: training
+    description: Training rounds per step.
+    value: 2
+    min: 1
+    max: 5
+    integer: true
+nodes:
+  - id: barracks
+    kind: source
+    name: Barracks
+    subsystem: military
+    rate: 1
+  - id: army
+    kind: pool
+    name: Army
+    subsystem: military
+    start: 40
+  - id: upkeep
+    kind: drain
+    name: Upkeep
+    subsystem: military
+    rate: 1
+edges:
+  - id: recruit
+    kind: flow
+    from: barracks
+    to: army
+    label: recruits
+    rate: "recruits * training"
+  - id: pay_upkeep
+    kind: flow
+    from: army
+    to: upkeep
+    label: upkeep
+    rate: "2 * (recruits + training) - 4"
+noInteraction: []
+invariants: []
+objectives:
+  - id: strength
+    description: Army size at the end of the run.
+    expr: army
+    measure: final
+    sense: max

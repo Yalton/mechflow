@@ -1,0 +1,83 @@
+version: 1
+name: Obsolete
+description: >-
+  Trading, fighting and crafting all spend the same stamina. Trade turns each point into ten gold, the
+  others into one, so any stamina spent outside trade is wasted: trade makes combat and crafting
+  obsolete. Triggers the system dominance comparison.
+properties: []
+subsystems:
+  - id: trade
+    name: Trade
+    tier: core
+  - id: combat
+    name: Combat
+    tier: core
+  - id: crafting
+    name: Crafting
+    tier: support
+nodes:
+  - id: rest
+    kind: source
+    name: Rest
+    rate: 10
+  - id: stamina
+    kind: pool
+    name: Stamina
+    start: 10
+    capacity: 10
+    activation: passive
+  - id: gold
+    kind: pool
+    name: Gold
+    start: 0
+    activation: passive
+  - id: haggle
+    kind: converter
+    name: Haggle
+    subsystem: trade
+    activation: interactive
+    maxActivationsPerStep: 10
+    inputs:
+      - resource: stamina
+        amount: 1
+    outputs:
+      - resource: gold
+        amount: 10
+  - id: fight
+    kind: converter
+    name: Fight
+    subsystem: combat
+    activation: interactive
+    maxActivationsPerStep: 10
+    inputs:
+      - resource: stamina
+        amount: 1
+    outputs:
+      - resource: gold
+        amount: 1
+  - id: forge
+    kind: converter
+    name: Forge
+    subsystem: crafting
+    activation: interactive
+    maxActivationsPerStep: 10
+    inputs:
+      - resource: stamina
+        amount: 1
+    outputs:
+      - resource: gold
+        amount: 1
+edges:
+  - id: recover
+    kind: flow
+    from: rest
+    to: stamina
+    label: stamina
+noInteraction: []
+invariants: []
+objectives:
+  - id: wealth
+    description: Gold at the end of the run.
+    expr: gold
+    measure: final
+    sense: max

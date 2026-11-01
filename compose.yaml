@@ -1,0 +1,15 @@
+# Runs the mechflow server and web app. The repo's models/ folder is mounted
+# so browser saves land in the real YAML files and disk edits reach the page.
+# The server has no auth, so the port is published on loopback only.
+services:
+  mechflow:
+    build: .
+    image: mechflow:latest
+    container_name: mechflow
+    restart: unless-stopped
+    # Write model files as the host user, not root.
+    user: "${UID:-1000}:${GID:-1000}"
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - ./models:/app/models

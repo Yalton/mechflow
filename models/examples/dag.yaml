@@ -1,0 +1,60 @@
+version: 1
+name: DAG
+description: A small interaction DAG that is expected to flag nothing.
+properties:
+  - id: x
+    kind: number
+    description: Quantity x.
+  - id: y
+    kind: number
+    description: Quantity y.
+  - id: z
+    kind: number
+    description: Quantity z.
+subsystems:
+  - id: s1
+    name: Subsystem One
+    tier: core
+  - id: s2
+    name: Subsystem Two
+    tier: support
+nodes:
+  - id: a
+    kind: mechanic
+    name: A
+    subsystem: s1
+    reads: []
+    writes:
+      - x
+  - id: b
+    kind: mechanic
+    name: B
+    subsystem: s2
+    reads: []
+    writes:
+      - y
+  - id: c
+    kind: mechanic
+    name: C
+    subsystem: s1
+    reads: []
+    writes:
+      - z
+edges:
+  - id: a_to_b
+    kind: interaction
+    from: a
+    to: b
+    label: feeds
+  - id: a_to_c
+    kind: interaction
+    from: a
+    to: c
+    label: feeds
+  - id: b_to_c
+    kind: interaction
+    from: b
+    to: c
+    label: feeds
+noInteraction: []
+invariants: []

@@ -1,0 +1,87 @@
+version: 1
+name: Combo
+description: >-
+  Three trainable upgrades. Each adds a little income alone, but Sharp Blades and Lucky Charm multiply
+  together, so training both dwarfs any single upgrade. Triggers the dominant-combination search.
+properties: []
+subsystems:
+  - id: hero
+    name: Hero
+    tier: core
+nodes:
+  - id: quests
+    kind: source
+    name: Quests
+    subsystem: hero
+    rate: 1
+  - id: gold
+    kind: pool
+    name: Gold
+    subsystem: hero
+    start: 0
+  - id: sharpen
+    kind: source
+    name: Sharpen Blades
+    subsystem: hero
+    rate: 1
+    activation: interactive
+  - id: sharp
+    kind: pool
+    name: Sharp Blades
+    subsystem: hero
+    start: 0
+    capacity: 5
+    activation: passive
+  - id: pray
+    kind: source
+    name: Pray for Luck
+    subsystem: hero
+    rate: 1
+    activation: interactive
+  - id: lucky
+    kind: pool
+    name: Lucky Charm
+    subsystem: hero
+    start: 0
+    capacity: 5
+    activation: passive
+  - id: drill
+    kind: source
+    name: Drill Armour
+    subsystem: hero
+    rate: 1
+    activation: interactive
+  - id: armour
+    kind: pool
+    name: Armour
+    subsystem: hero
+    start: 0
+    capacity: 5
+    activation: passive
+edges:
+  - id: earn
+    kind: flow
+    from: quests
+    to: gold
+    label: quest gold
+    rate: "10 + sharp + lucky + armour + 2 * sharp * lucky"
+  - id: train_sharp
+    kind: flow
+    from: sharpen
+    to: sharp
+  - id: train_lucky
+    kind: flow
+    from: pray
+    to: lucky
+  - id: train_armour
+    kind: flow
+    from: drill
+    to: armour
+noInteraction: []
+invariants: []
+objectives:
+  - id: wealth
+    description: Gold at the end of the run.
+    expr: gold
+    measure: final
+    sense: max

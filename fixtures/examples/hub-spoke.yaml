@@ -1,0 +1,80 @@
+version: 1
+name: Hub Spoke
+description: A market pool that every source feeds and every drain consumes.
+properties:
+  - id: goods
+    kind: number
+    description: Amount of goods available.
+  - id: services
+    kind: number
+    description: Amount of services available.
+  - id: waste
+    kind: number
+    description: Amount of waste produced.
+subsystems:
+  - id: economy
+    name: Economy
+    tier: core
+nodes:
+  - id: market
+    kind: pool
+    name: Market
+    subsystem: economy
+    start: 0
+  - id: labour
+    kind: source
+    name: Labour
+    subsystem: economy
+    rate: 1
+  - id: capital
+    kind: source
+    name: Capital
+    subsystem: economy
+    rate: 1
+  - id: land
+    kind: source
+    name: Land
+    subsystem: economy
+    rate: 1
+  - id: goods
+    kind: drain
+    name: Goods
+    subsystem: economy
+    rate: 1
+  - id: services
+    kind: drain
+    name: Services
+    subsystem: economy
+    rate: 1
+  - id: waste
+    kind: drain
+    name: Waste
+    subsystem: economy
+    rate: 1
+edges:
+  - id: labour_to_market
+    kind: flow
+    from: labour
+    to: market
+  - id: capital_to_market
+    kind: flow
+    from: capital
+    to: market
+  - id: land_to_market
+    kind: flow
+    from: land
+    to: market
+  - id: market_to_goods
+    kind: flow
+    from: market
+    to: goods
+  - id: market_to_services
+    kind: flow
+    from: market
+    to: services
+  - id: market_to_waste
+    kind: flow
+    from: market
+    to: waste
+noInteraction: []
+invariants: []

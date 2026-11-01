@@ -1,0 +1,87 @@
+version: 1
+name: Elements
+description: A small mechanic map used as an example model for analysis.
+properties:
+  - id: temperature
+    kind: number
+    description: How hot or cold something is.
+  - id: wetness
+    kind: number
+    description: How much moisture something holds.
+  - id: flammable
+    kind: flag
+    description: Whether the object can catch fire.
+  - id: conductive
+    kind: flag
+    description: Whether the object carries electricity.
+subsystems:
+  - id: combustion
+    name: Combustion
+    tier: core
+  - id: weather
+    name: Weather
+    tier: core
+  - id: power
+    name: Power
+    tier: support
+  - id: nature
+    name: Nature
+    tier: flavor
+  - id: technology
+    name: Technology
+    tier: flavor
+nodes:
+  - id: fire
+    kind: mechanic
+    name: Fire
+    subsystem: combustion
+    reads: []
+    writes:
+      - temperature
+  - id: water
+    kind: mechanic
+    name: Water
+    subsystem: weather
+    reads:
+      - temperature
+    writes:
+      - wetness
+      - temperature
+  - id: ice
+    kind: mechanic
+    name: Ice
+    subsystem: weather
+    reads:
+      - temperature
+    writes: []
+  - id: electricity
+    kind: mechanic
+    name: Electricity
+    subsystem: power
+    reads:
+      - conductive
+      - wetness
+    writes: []
+  - id: wood
+    kind: entity
+    name: Wood
+    subsystem: nature
+    has:
+      - flammable
+  - id: metal_door
+    kind: entity
+    name: Metal Door
+    subsystem: technology
+    has:
+      - conductive
+edges:
+  - id: fire_to_wood
+    kind: interaction
+    from: fire
+    to: wood
+    label: ignites
+noInteraction:
+  - a: ice
+    b: metal_door
+    reason: Ice and a metal door are unrelated in this model.
+invariants: []

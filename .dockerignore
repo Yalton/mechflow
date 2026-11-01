@@ -1,0 +1,15 @@
+**/node_modules
+**/dist
+**/*.tsbuildinfo
+**/coverage
+.git
+.beads
+.beads.*
+.claude
+.serena
+.worktrees
+.tmp
+.vitesttmp
+.agents
+.codex
+.cursor

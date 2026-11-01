@@ -1,0 +1,31 @@
+
+# pnpm / node
+node_modules/
+dist/
+coverage/
+*.log
+.pnpm-store/
+
+# Python
+__pycache__/
+*.pyc
+
+# editor / OS
+.DS_Store
+.idea/
+.vscode/
+*.tsbuildinfo
+
+# vitest temp dir (packages/web/vitest.config.ts)
+.vitesttmp/
+
+# local agent and tool state
+.serena/
+.claude/*.lock
+.beads.embedded-*/
+.tmp/
+.worktrees/
+
+# personal models; only the shipped examples are tracked
+models/*
+!models/examples/

@@ -1,0 +1,41 @@
+version: 1
+name: Inflation
+description: Quests pay out more gold than the shop takes back, so the wallet grows without bound. Triggers the inflation check.
+properties:
+  - id: gold
+    kind: number
+    description: The player's currency.
+subsystems:
+  - id: economy
+    name: Economy
+    tier: core
+nodes:
+  - id: quests
+    kind: source
+    name: Quest Rewards
+    subsystem: economy
+    rate: 12
+  - id: wallet
+    kind: pool
+    name: Wallet
+    subsystem: economy
+    start: 50
+  - id: shop
+    kind: drain
+    name: Shop
+    subsystem: economy
+    rate: 5
+edges:
+  - id: quest_pay
+    kind: flow
+    from: quests
+    to: wallet
+    label: quest rewards
+  - id: purchases
+    kind: flow
+    from: wallet
+    to: shop
+    label: purchases
+    rate: "5"
+noInteraction: []
+invariants: []

@@ -1,0 +1,104 @@
+version: 1
+name: Narrow
+description: >-
+  Four crafts share the same stamina. Jewellery is worth far more than the rest at the usual market
+  price, so it is the only viable build and everything else trails by over 30%. When the price of
+  jewellery collapses it is the worst choice, which makes it a specialist. Triggers the possibility
+  space analysis.
+properties: []
+subsystems:
+  - id: crafts
+    name: Crafts
+    tier: core
+parameters:
+  - id: price
+    description: Gold per piece of jewellery.
+    value: 10
+    min: 1
+    max: 20
+nodes:
+  - id: rest
+    kind: source
+    name: Rest
+    subsystem: crafts
+    rate: 10
+  - id: stamina
+    kind: pool
+    name: Stamina
+    subsystem: crafts
+    start: 10
+    capacity: 10
+  - id: gold
+    kind: pool
+    name: Gold
+    subsystem: crafts
+    start: 0
+    activation: passive
+  - id: jewels
+    kind: pool
+    name: Jewellery
+    subsystem: crafts
+    start: 0
+    activation: passive
+  - id: jeweller
+    kind: converter
+    name: Make Jewellery
+    subsystem: crafts
+    activation: interactive
+    maxActivationsPerStep: 10
+    inputs:
+      - resource: stamina
+        amount: 1
+    outputs:
+      - resource: jewels
+        amount: 1
+  - id: smith
+    kind: converter
+    name: Smith
+    subsystem: crafts
+    activation: interactive
+    maxActivationsPerStep: 10
+    inputs:
+      - resource: stamina
+        amount: 1
+    outputs:
+      - resource: gold
+        amount: 6
+  - id: weave
+    kind: converter
+    name: Weave
+    subsystem: crafts
+    activation: interactive
+    maxActivationsPerStep: 10
+    inputs:
+      - resource: stamina
+        amount: 1
+    outputs:
+      - resource: gold
+        amount: 5
+  - id: carve
+    kind: converter
+    name: Carve
+    subsystem: crafts
+    activation: interactive
+    maxActivationsPerStep: 10
+    inputs:
+      - resource: stamina
+        amount: 1
+    outputs:
+      - resource: gold
+        amount: 4
+edges:
+  - id: recover
+    kind: flow
+    from: rest
+    to: stamina
+    label: stamina
+noInteraction: []
+invariants: []
+objectives:
+  - id: wealth
+    description: Gold plus jewellery at market price, at the end of the run.
+    expr: "gold + jewels * price"
+    measure: final
+    sense: max

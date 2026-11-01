@@ -1,0 +1,38 @@
+{
+  "name": "@mechflow/core",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "author": "Dalton Bailey",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yalton/mechflow.git",
+    "directory": "packages/core"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc --build",
+    "typecheck": "tsc --build",
+    "lint": "eslint \"src/**/*.ts\" \"test/**/*.ts\"",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "yaml": "^2.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.4"
+  }
+}

@@ -1,0 +1,38 @@
+version: 1
+name: Snowballing
+description: Savings earn interest in proportion to what they hold, a reinforcing loop. Triggers the snowballing check (and, as compounding growth does, the inflation check).
+properties:
+  - id: money
+    kind: number
+    description: Saved money.
+subsystems:
+  - id: bank
+    name: Bank
+    tier: core
+nodes:
+  - id: interest
+    kind: source
+    name: Interest
+    subsystem: bank
+    rate: 1
+  - id: savings
+    kind: pool
+    name: Savings
+    subsystem: bank
+    start: 10
+edges:
+  - id: interest_paid
+    kind: flow
+    from: interest
+    to: savings
+    label: interest paid
+  - id: interest_rate
+    kind: state
+    from: savings
+    to: interest
+    label: more savings pay more interest
+    polarity: "+"
+    strength: modifier
+    multiplier: "0.1"
+noInteraction: []
+invariants: []
